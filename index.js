@@ -1,16 +1,9 @@
-const redis = require('weplay-common').redis();
-const io = require('socket.io-emitter')(redis);
-const interval = process.env.WEPLAY_INTERVAL || 5000;
-const logger = require('weplay-common').logger('weplay-presence');
+process.title = 'weplay-presence';
 
-setInterval(() => {
-    redis.hgetall('weplay:connections', (err, counts) => {
-        if (!counts) return;
-        let count = 0;
-        for (const i in counts) count += Number(counts[i]);
-        logger.debug('connections', count);
-        redis.set('weplay:connections-total', count);
-        io.emit('connections', count);
-    });
-}, interval);
+const discoveryUrl = process.env.DISCOVERY_URL || 'http://localhost:3010';
+const discoveryPort = process.env.DISCOVERY_PORT || 3060;
 
+const PresenceService = require('./PresenceService');
+const service = new PresenceService(discoveryUrl, discoveryPort);
+
+require('weplay-common').cleanup(service.destroy.bind(service));
