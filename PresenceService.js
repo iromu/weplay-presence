@@ -1,21 +1,12 @@
 const EventBus = require('weplay-common').EventBus
-const redis = require('weplay-common').redis()
-require('socket.io-emitter')(redis)
+// const redis = require('weplay-common').redis()
+// require('socket.io-emitter')(redis)
 const interval = process.env.WEPLAY_INTERVAL || 5000
 
 class PresenceService {
   constructor(discoveryUrl, discoveryPort) {
     this.uuid = require('node-uuid').v4()
     this.logger = require('weplay-common').logger('weplay-presence-service', this.uuid)
-
-    setInterval(() => {
-      redis.hgetall('weplay:connections', (err, counts) => {
-        if (!counts || err) {
-          return
-        }
-        this.broadcastData(counts)
-      })
-    }, interval)
 
     this.bus = new EventBus({
       url: discoveryUrl,
@@ -33,6 +24,18 @@ class PresenceService {
 
   init() {
     this.logger.info('PresenceService init()')
+
+    if (!this.trackInterval) {
+      this.trackInterval = setInterval(() => {
+        /*redis.hgetall('weplay:connections', (err, counts) => {
+         if (!counts || err) {
+         return
+         }
+         this.broadcastData(counts)
+         })*/
+      }, interval)
+    }
+
   }
 
   broadcastData(counts) {
@@ -43,7 +46,7 @@ class PresenceService {
       }
     }
     this.logger.debug('connections', count)
-    redis.set('weplay:connections-total', count)
+    // redis.set('weplay:connections-total', count)
     this.bus.emit('connections', count)
   }
 
