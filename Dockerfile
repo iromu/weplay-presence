@@ -1,4 +1,4 @@
-FROM node:7
+FROM iromu/weplay-common:latest
 
 # Create app directory
 RUN mkdir -p /usr/src/app/presence
@@ -7,7 +7,8 @@ WORKDIR /usr/src/app/presence
 COPY . .
 
 # Install app dependencies
-RUN npm install
+RUN yarn --production
+RUN yarn link weplay-common
 
 # Setup environment
 ENV NODE_ENV production
