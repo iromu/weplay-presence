@@ -7,7 +7,7 @@ WORKDIR /usr/src/app/presence
 COPY . .
 
 # Install app dependencies
-RUN yarn --production
+RUN yarn install
 RUN yarn link weplay-common
 
 # Setup environment

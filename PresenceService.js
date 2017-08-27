@@ -6,7 +6,7 @@ const interval = process.env.WEPLAY_INTERVAL || 5000
 class PresenceService {
   constructor(discoveryUrl, discoveryPort) {
     this.uuid = require('uuid/v1')()
-    this.logger = require('weplay-common').logger('weplay-presence-service', this.uuid)
+    this.logger = LoggerFactory.get('weplay-presence-service', this.uuid)
 
     this.bus = new EventBus({
       url: discoveryUrl,
